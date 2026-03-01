@@ -1,0 +1,1375 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Laboratorio virtuale - Identificazione dei minerali</title>
+  <style>
+    :root{
+      --bg:#0b1020;
+      --panel:#111a33;
+      --panel2:#0f1730;
+      --text:#e9eefc;
+      --muted:#aab5d6;
+      --border:rgba(255,255,255,.12);
+      --shadow: 0 12px 40px rgba(0,0,0,.35);
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      --ok: rgba(55,214,122,.95);
+      --bad: rgba(255,92,122,.95);
+    }
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family:var(--sans);
+      background: radial-gradient(1200px 700px at 20% 10%, #15224a, transparent 60%),
+                  radial-gradient(900px 600px at 80% 30%, #1a2c4f, transparent 55%),
+                  var(--bg);
+      color:var(--text);
+      min-height:100vh;
+      display:flex;
+      justify-content:center;
+    }
+
+    /* Screens */
+    .screen{
+      width:min(980px, 96vw);
+      min-height: calc(100vh - 40px);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:24px 0 40px;
+    }
+    .startCard{
+      width:min(760px, 96vw);
+      background: linear-gradient(180deg, rgba(255,255,255,.05), transparent 60%), var(--panel);
+      border:1px solid rgba(255,255,255,.14);
+      border-radius:18px;
+      box-shadow: var(--shadow);
+      padding:22px;
+      text-align:center;
+    }
+    .startCard h1{ margin:0 0 10px; font-size:22px; letter-spacing:.2px; }
+    .startCard p{ margin:0 0 18px; color:var(--muted); line-height:1.4; font-size:14px; }
+    .startRow{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
+
+    .wrap{
+      width:min(1180px, 96vw);
+      padding:24px 0 40px;
+      display:grid;
+      grid-template-columns: 1.35fr .95fr;
+      gap:18px;
+      align-content:start;
+    }
+
+    header{
+      grid-column: 1 / -1;
+      background: linear-gradient(180deg, rgba(255,255,255,.06), transparent 65%);
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:14px;
+      padding:18px;
+      box-shadow: var(--shadow);
+    }
+    header h1{ margin:0; font-size:20px; letter-spacing:.2px; }
+    header .sub{
+      margin-top:8px;
+      color:var(--muted);
+      font-size:13.5px;
+      line-height:1.35;
+    }
+    header .sub b{ color:var(--text); font-weight:800; }
+
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.04), transparent 55%), var(--panel);
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:14px;
+      box-shadow: var(--shadow);
+      padding:16px;
+    }
+
+    .topline{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:14px;
+      margin-bottom:10px;
+      flex-wrap:wrap;
+    }
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.03);
+      font-size:12px;
+      color:var(--muted);
+      white-space:nowrap;
+    }
+    .badge strong{ color:var(--text); font-weight:800; }
+
+    .grid2{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:12px;
+      margin-top:10px;
+    }
+    .mini{
+      background: linear-gradient(180deg, rgba(255,255,255,.03), transparent 60%), var(--panel2);
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:12px;
+      padding:12px;
+      min-height:150px;
+    }
+    .mini h3{
+      margin:0 0 8px;
+      font-size:13px;
+      letter-spacing:.2px;
+      color:var(--muted);
+      font-weight:700;
+    }
+
+    .rockImgWrap{ display:grid; gap:10px; }
+    .rockImg{
+      width:100%;
+      max-height:280px;
+      object-fit:cover;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.18);
+    }
+    pre.ascii{
+      margin:0;
+      font-family:var(--mono);
+      font-size:13px;
+      line-height:1.08;
+      letter-spacing:.6px;
+      color:#dfe7ff;
+      white-space:pre;
+    }
+    .imgLinks{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+    a.linkBtn{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 10px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.16);
+      background: rgba(255,255,255,.04);
+      color: var(--text);
+      text-decoration:none;
+      font-size:13px;
+    }
+    a.linkBtn:hover{ background: rgba(255,255,255,.07); border-color: rgba(255,255,255,.22); }
+
+    .bullets{
+      margin:0;
+      padding-left:18px;
+      color: var(--text);
+      font-size:14px;
+      line-height:1.35;
+    }
+    .bullets li{ margin: 6px 0; color: rgba(233,238,252,.95); }
+
+    .tests{
+      margin-top:12px;
+      display:grid;
+      gap:10px;
+    }
+    .testRow{
+      display:grid;
+      grid-template-columns: 1.2fr auto auto;
+      gap:10px;
+      align-items:center;
+      padding:10px 10px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.03);
+    }
+    .testRow .tname{ font-weight:800; letter-spacing:.15px; font-size:14px; }
+    .testRow .tdesc{ color:var(--muted); font-size:12.5px; line-height:1.25; margin-top:3px; }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:4px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      font-size:12px;
+      color:var(--muted);
+      white-space:nowrap;
+      justify-content:center;
+      min-width:78px;
+    }
+    .pill.done{
+      border-color: rgba(55,214,122,.35);
+      color: rgba(55,214,122,.95);
+      background: rgba(55,214,122,.06);
+    }
+
+    button{
+      border:1px solid rgba(255,255,255,.16);
+      background: rgba(255,255,255,.04);
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:12px;
+      cursor:pointer;
+      font-size:14px;
+    }
+    button:hover{ background: rgba(255,255,255,.07); border-color: rgba(255,255,255,.22); }
+    button:active{ transform: translateY(1px); }
+    button.primary{
+      background: linear-gradient(90deg, rgba(255,255,255,.14), rgba(55,214,122,.12));
+      border-color: rgba(255,255,255,.22);
+    }
+    button.small{ padding:8px 10px; font-size:13px; border-radius:10px; }
+    button.danger{
+      border-color: rgba(255,92,122,.40);
+      background: rgba(255,92,122,.08);
+    }
+    button:disabled{ opacity:.45; cursor:not-allowed; transform:none; }
+
+    .right .card{ position:sticky; top:18px; }
+
+    .score{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      margin: 8px 0 10px;
+      padding:10px 12px;
+      border-radius:12px;
+      background: rgba(255,255,255,.03);
+      border:1px solid rgba(255,255,255,.10);
+    }
+    .score .big{ font-size:18px; font-weight:900; letter-spacing:.2px; }
+    .tiny{ font-size:12px; color:var(--muted); line-height:1.25; }
+
+    .list{
+      font-family:var(--mono);
+      font-size:13px;
+      line-height:1.35;
+      color:#dfe7ff;
+      white-space:pre-wrap;
+    }
+    .log{
+      max-height: 280px;
+      overflow:auto;
+      padding-right:6px;
+    }
+    .line{ margin:0 0 8px; }
+    .tag{
+      font-family:var(--mono);
+      font-size:12px;
+      padding:2px 8px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.16);
+      color:var(--muted);
+      margin-right:8px;
+      display:inline-block;
+    }
+    .tag.info{ border-color: rgba(233,238,252,.22); color: rgba(233,238,252,.92); }
+
+    .footer-actions{
+      display:flex;
+      gap:10px;
+      margin-top:10px;
+      flex-wrap:wrap;
+    }
+
+    .note{
+      margin-top:10px;
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px dashed rgba(255,255,255,.18);
+      color:var(--muted);
+      font-size:13px;
+      background: rgba(255,255,255,.02);
+    }
+
+    .bench{
+      margin-top:12px;
+      display:grid;
+      gap:10px;
+    }
+    .benchGrid{
+      display:grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap:10px;
+    }
+    .toolBtn{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      gap:6px;
+      padding:10px 10px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.03);
+      cursor:pointer;
+      user-select:none;
+      min-height:64px;
+      text-align:center;
+    }
+    .toolBtn:hover{ background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.22); }
+    .toolEmoji{ font-size:20px; }
+    .toolLabel{ font-size:12.5px; color: rgba(233,238,252,.95); font-weight:750; }
+    .toolSub{ font-size:12px; color: var(--muted); line-height:1.2; }
+    .benchHint{ color: var(--muted); font-size:13px; line-height:1.3; }
+
+    /* Modal */
+    .modal-backdrop{
+      position:fixed;
+      inset:0;
+      background: rgba(0,0,0,.55);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+      z-index:50;
+    }
+    .modal{
+      width:min(780px, 96vw);
+      background: linear-gradient(180deg, rgba(255,255,255,.05), transparent 55%), var(--panel);
+      border:1px solid rgba(255,255,255,.14);
+      border-radius:16px;
+      box-shadow: var(--shadow);
+      padding:16px;
+    }
+    .modal h2{ margin:0 0 10px; font-size:18px; }
+    .row{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+      margin:10px 0;
+    }
+    label{ font-size:13px; color:var(--muted); display:block; margin-bottom:6px; }
+    select, input{
+      width:100%;
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.16);
+      background: rgba(0,0,0,.18);
+      color: var(--text);
+      outline:none;
+      font-size:14px;
+    }
+    .modal .modal-actions{
+      display:flex;
+      justify-content:flex-end;
+      gap:10px;
+      margin-top:10px;
+      flex-wrap:wrap;
+    }
+    .statusBox{
+      margin-top:10px;
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.03);
+      font-size:13.5px;
+      line-height:1.35;
+      display:none;
+    }
+    .statusBox.ok{ border-color: rgba(55,214,122,.35); }
+    .statusBox.bad{ border-color: rgba(255,92,122,.35); }
+    .statusTitle{
+      font-weight:900;
+      letter-spacing:.2px;
+      margin-bottom:6px;
+    }
+    .statusTitle.ok{ color: var(--ok); }
+    .statusTitle.bad{ color: var(--bad); }
+
+    /* Drawer */
+    .drawerBg{
+      position:fixed;
+      inset:0;
+      background: rgba(0,0,0,.55);
+      display:none;
+      z-index:70;
+    }
+    .drawer{
+      position:fixed;
+      top:0;
+      right:0;
+      height:100%;
+      width:min(680px, 92vw);
+      background: linear-gradient(180deg, rgba(255,255,255,.05), transparent 55%), var(--panel);
+      border-left:1px solid rgba(255,255,255,.14);
+      box-shadow: var(--shadow);
+      transform: translateX(110%);
+      transition: transform .22s ease;
+      z-index:80;
+      display:flex;
+      flex-direction:column;
+    }
+    .drawer.open{ transform: translateX(0%); }
+    .drawerHeader{
+      padding:14px 14px 10px;
+      border-bottom:1px solid rgba(255,255,255,.10);
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .drawerHeader h2{ margin:0; font-size:16px; letter-spacing:.2px; }
+    .drawerBody{ padding:12px 14px 16px; overflow:auto; }
+    .theory h3{
+      margin:12px 0 6px;
+      font-size:14px;
+      color: rgba(233,238,252,.95);
+      letter-spacing:.2px;
+    }
+    .theory h4{
+      margin:14px 0 6px;
+      font-size:13px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing:.9px;
+    }
+    .theory p, .theory li{
+      color: var(--text);
+      opacity:.95;
+      font-size:14px;
+      line-height:1.35;
+    }
+    .theory ul{ margin:6px 0 0 18px; }
+
+    .chipRow{ display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; }
+    .chip{
+      display:inline-flex;
+      align-items:center;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.03);
+      font-size:12.5px;
+      color: rgba(233,238,252,.95);
+    }
+
+    @media (max-width: 980px){
+      .wrap{ grid-template-columns: 1fr; }
+      .right .card{ position:static; }
+      .testRow{ grid-template-columns: 1fr; }
+      .benchGrid{ grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- PAGINA INIZIALE -->
+  <section class="screen" id="startScreen" style="display:flex;">
+    <div class="startCard">
+      <h1>Laboratorio virtuale - Identificazione dei minerali</h1>
+      <p>
+        Nel laboratorio sono presenti <b>10 diversi minerali</b> (<span id="mineralNamesStart">—</span>).
+        Analizza le proprietà fisiche dei campioni e identificali.
+      </p>
+      <div class="startRow">
+        <button class="primary" id="btnStart">Inizia</button>
+      </div>
+      <div class="note" style="text-align:left; margin-top:14px;">
+        Suggerimento: evita di basarti su una sola prova. Combina più proprietà per arrivare a una soluzione unica.
+      </div>
+    </div>
+  </section>
+
+  <!-- GIOCO -->
+  <section class="wrap" id="gameScreen" style="display:none;">
+    <header>
+      <h1>Lab Virtuale — Identifica i Minerali</h1>
+      <div class="sub">
+        Nel laboratorio sono presenti <b>10 diversi minerali</b> (<span id="mineralNames">—</span>),
+        analizza le proprietà fisiche dei seguenti campioni e identificali.
+      </div>
+    </header>
+
+    <section class="left card" id="sampleCard"></section>
+
+    <section class="right">
+      <div class="card">
+        <div class="score">
+          <div>
+            <div class="tiny">Punteggio totale</div>
+            <div class="big" id="totalScore">0</div>
+          </div>
+          <div style="text-align:right">
+            <div class="tiny">Campione</div>
+            <div class="big"><span id="sampleIndex">1</span>/<span id="totalItems">10</span></div>
+          </div>
+        </div>
+
+        <div class="mini">
+          <h3>Taccuino (risultati)</h3>
+          <div class="list log" id="notebook">(nessun test eseguito)</div>
+        </div>
+
+        <div class="footer-actions">
+          <button class="primary" id="btnGuess">Fai un’ipotesi</button>
+          <button class="danger" id="btnSkip">Salta campione</button>
+          <button id="btnRestart">Ricomincia</button>
+        </div>
+
+        <div class="note" style="margin-top:12px;">
+          Se sbagli, puoi riprovare sullo stesso campione: il punteggio massimo del campione diminuisce.
+        </div>
+      </div>
+    </section>
+  </section>
+
+  <!-- PAGINA FINALE -->
+  <section class="screen" id="endScreen">
+    <div class="startCard">
+      <h1>Fine partita</h1>
+      <p>
+        Punteggio totale: <b id="finalScore">0</b>
+      </p>
+      <div class="startRow">
+        <button class="primary" id="btnPlayAgain">Ricomincia da capo</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- MODAL IPOTESI -->
+  <div class="modal-backdrop" id="modalBg" role="dialog" aria-modal="true">
+    <div class="modal">
+      <h2>Fai un’ipotesi</h2>
+
+      <div id="guessForm">
+        <div class="row">
+          <div>
+            <label for="guessFamily">Famiglia (opzionale)</label>
+            <select id="guessFamily">
+              <option value="">— (non scelgo)</option>
+              <option value="SILICATO">Silicato</option>
+              <option value="CARBONATO">Carbonato</option>
+              <option value="ALOGENURO">Alogenuro</option>
+              <option value="SOLFURO">Solfuro</option>
+            </select>
+          </div>
+          <div>
+            <label for="guessName">Nome</label>
+            <input id="guessName" placeholder="es. Quarzo" />
+          </div>
+        </div>
+
+        <div class="note" id="attemptNote" style="margin-top:8px;"></div>
+      </div>
+
+      <div class="statusBox" id="statusBox">
+        <div class="statusTitle" id="statusTitle"></div>
+        <div id="statusText"></div>
+      </div>
+
+      <div class="modal-actions" id="modalActions">
+        <button id="btnCancel">Annulla</button>
+        <button class="primary" id="btnSubmitGuess">Conferma ipotesi</button>
+        <button class="primary" id="btnNext" style="display:none;">Avanti</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DRAWER -->
+  <div class="drawerBg" id="drawerBg"></div>
+  <aside class="drawer" id="drawer">
+    <div class="drawerHeader">
+      <div>
+        <h2 id="drawerTitle">Risultati</h2>
+        <div class="tiny" id="drawerSubtitle"></div>
+      </div>
+      <button class="small" id="btnCloseDrawer">Chiudi</button>
+    </div>
+    <div class="drawerBody">
+      <div class="theory" id="drawerContent"></div>
+    </div>
+  </aside>
+
+  <script>
+    // ===========================================================
+    // IMMAGINI LOCALI (stessa cartella del file HTML)
+    // quarzo.jpg, calcite.jpg, dolomite.jpg, halite.jpg, galena.jpg,
+    // muscovite.jpg, biotite.jpg, pirite.jpg, ortoclasio.jpg, pirosseno.jpg
+    // ===========================================================
+
+    const BASE_MINERALS = [
+      { name:"Quarzo", family:"SILICATO", imageUrl:"quarzo.jpg",
+        ascii:`  *   .   *   .\n .  *  .  *  .\n  *   .   *   `,
+        visualHints:["Aspetto spesso chiaro/trasparente","Lucentezza vitrea (tipo vetro)","Rotture irregolari/curve (sfaldatura assente)"],
+        props:{ color:"CHIARO", luster:"VITREA", density:"MEDIA", cleavage:"ASSENTE", mohs:7.0 }
+      },
+      { name:"Calcite", family:"CARBONATO", imageUrl:"calcite.jpg",
+        ascii:`  <>  <>  <>\n <>  <>  <> \n  <>  <>  <>`,
+        visualHints:["Spesso bianca/incolore","Sfaldatura romboedrica (facce inclinate)","Durezza bassa: si graffia con moneta"],
+        props:{ color:"CHIARO", luster:"VITREA_PERLACEA", density:"MEDIA", cleavage:"ROMBOEDRICA", mohs:3.0 }
+      },
+      { name:"Dolomite", family:"CARBONATO", imageUrl:"dolomite.jpg",
+        ascii:` <> <> <> <>\n<> <> <> <>\n <> <> <> <>`,
+        visualHints:["Spesso chiara (bianco/rosa/grigio)","Sfaldatura romboedrica (simile alla calcite)","Più resistente della calcite al graffio con moneta"],
+        props:{ color:"CHIARO", luster:"VITREA_PERLACEA", density:"ALTA", cleavage:"ROMBOEDRICA", mohs:3.5 }
+      },
+      { name:"Halite", family:"ALOGENURO", imageUrl:"halite.jpg",
+        ascii:` [ ] [ ] [ ]\n [ ] [ ] [ ]\n [ ] [ ] [ ]`,
+        visualHints:["Spesso chiara/trasparente","Sfaldatura cubica (angoli a 90°)","Molto tenera: si incide facilmente"],
+        props:{ color:"CHIARO", luster:"VITREA", density:"BASSA", cleavage:"CUBICA", mohs:2.5 }
+      },
+      { name:"Galena", family:"SOLFURO", imageUrl:"galena.jpg",
+        ascii:` ####  ####\n###### #####\n ####  #### `,
+        visualHints:["Colore scuro (grigio/nero)","Lucentezza metallica","Molto pesante (densità molto alta)"],
+        props:{ color:"SCURO", luster:"METALLICA", density:"MOLTO_ALTA", cleavage:"CUBICA", mohs:2.5 }
+      },
+      { name:"Muscovite", family:"SILICATO", imageUrl:"muscovite.jpg",
+        ascii:`|||||||||||||\n|||||||||||||\n|||||||||||||`,
+        visualHints:["Si separa in fogli sottili (sfaldatura basale)","Lucentezza perlacea sui piani","Colore spesso chiaro/argenteo"],
+        props:{ color:"CHIARO", luster:"PERLACEA", density:"MEDIA", cleavage:"BASALE", mohs:2.5 }
+      },
+      { name:"Biotite", family:"SILICATO", imageUrl:"biotite.jpg",
+        ascii:`|||||||||||||\n|||||||||||||\n|||||||||||||`,
+        visualHints:["Si separa in fogli (sfaldatura basale)","Colore scuro (bruno/nero)","Lucentezza perlacea"],
+        props:{ color:"SCURO", luster:"PERLACEA", density:"MEDIA", cleavage:"BASALE", mohs:2.5 }
+      },
+      { name:"Pirite", family:"SOLFURO", imageUrl:"pirite.jpg",
+        ascii:` ****  ****\n***********\n ****  ****`,
+        visualHints:["Colore giallo-bruno/metallico","Lucentezza metallica","Dura: può graffiare il vetro"],
+        props:{ color:"SCURO", luster:"METALLICA", density:"ALTA", cleavage:"SCARSA", mohs:6.5 }
+      },
+      { name:"Ortoclasio", family:"SILICATO", imageUrl:"ortoclasio.jpg",
+        ascii:`== == == ==\n == == == =\n== == == ==`,
+        visualHints:["Colore chiaro/rosato o bianco","Due direzioni di sfaldatura circa a 90°","Durezza medio-alta"],
+        props:{ color:"CHIARO", luster:"VITREA", density:"MEDIA", cleavage:"DUE_90", mohs:6.0 }
+      },
+      { name:"Pirosseno", family:"SILICATO", imageUrl:"pirosseno.jpg",
+        ascii:`==//==//==//\n//==//==//==\n==//==//==//`,
+        visualHints:["Colore spesso scuro (verde scuro/nero)","Due direzioni di sfaldatura circa a 90°","Densità spesso più alta di un feldspato"],
+        props:{ color:"SCURO", luster:"VITREA", density:"ALTA", cleavage:"DUE_90", mohs:5.5 }
+      }
+    ];
+
+    const EXPERIMENTS = [
+      { id:"color",    label:"Colore",      what:"Osservi il colore dominante del campione" },
+      { id:"luster",   label:"Lucentezza",  what:"Valuti come riflette la luce (metallica, vitrea, perlacea)" },
+      { id:"density",  label:"Densità",     what:"Stima ‘leggera/media/pesante’" },
+      { id:"cleavage", label:"Sfaldatura",  what:"Osservi i piani di rottura (direzioni, angoli, qualità)" },
+      { id:"hardness", label:"Durezza",     what:"Test di graffio con strumenti (Banco strumenti)" },
+    ];
+
+    const TOOLS = [
+      { id:"nail",  emoji:"💅", name:"Unghia",  mohs:2.5, note:"~2.5" },
+      { id:"coin",  emoji:"🪙", name:"Moneta",  mohs:3.5, note:"~3.5" },
+      { id:"steel", emoji:"🔩", name:"Acciaio", mohs:5.5, note:"~5.5" },
+      { id:"glass", emoji:"🪟", name:"Vetro",   mohs:5.5, note:"~5.5" }
+    ];
+
+    function clone(obj){ return JSON.parse(JSON.stringify(obj)); }
+    function rand(n){ return Math.floor(Math.random()*n); }
+    function chance(p){ return Math.random()*100 < p; }
+
+    // Non alteriamo i dati "raw" dei minerali: l'incertezza è solo nel testo mostrato.
+    function makeVariant(min){ return clone(min); }
+
+    const state = {
+      items: [],
+      idx: 0,
+      totalScore: 0,
+      testsUsed: 0,
+      notebook: {},
+      notebookRaw: {},
+      hardnessActive: false,
+      hardnessTrials: [],
+      attempts: 0,
+      lastGain: 0,
+      pendingAdvance: false
+    };
+
+    // schermate
+    const startScreen = document.getElementById("startScreen");
+    const gameScreen  = document.getElementById("gameScreen");
+    const endScreen   = document.getElementById("endScreen");
+    const finalScoreEl = document.getElementById("finalScore");
+
+    document.getElementById("btnStart").addEventListener("click", () => {
+      startScreen.style.display = "none";
+      endScreen.style.display = "none";
+      gameScreen.style.display = "grid";
+      resetGame();
+    });
+
+    document.getElementById("btnPlayAgain").addEventListener("click", () => {
+      endScreen.style.display = "none";
+      startScreen.style.display = "none";
+      gameScreen.style.display = "grid";
+      resetGame();
+    });
+
+    // nomi in home e header
+    (function initNames(){
+      const names = BASE_MINERALS.map(m => m.name).sort((a,b)=>a.localeCompare(b,"it"));
+      document.getElementById("mineralNamesStart").textContent = names.join(", ");
+      document.getElementById("mineralNames").textContent = names.join(", ");
+    })();
+
+    function currentItem(){ return state.items[state.idx]; }
+
+    function initItem(){
+      state.testsUsed = 0;
+      state.notebook = {};
+      state.notebookRaw = {};
+      state.hardnessActive = false;
+      state.hardnessTrials = [];
+      state.attempts = 0;
+      state.lastGain = 0;
+      state.pendingAdvance = false;
+      resetGuessModalUI();
+    }
+
+    function resetGame(){
+      state.items = BASE_MINERALS.map(makeVariant);
+      for(let i=state.items.length-1;i>0;i--){
+        const j = rand(i+1);
+        [state.items[i], state.items[j]] = [state.items[j], state.items[i]];
+      }
+      state.idx = 0;
+      state.totalScore = 0;
+      initItem();
+      document.getElementById("totalItems").textContent = String(state.items.length);
+      render();
+      updateScoreUI();
+    }
+
+    // Drawer
+    const drawerBg = document.getElementById("drawerBg");
+    const drawer = document.getElementById("drawer");
+    const drawerTitle = document.getElementById("drawerTitle");
+    const drawerSubtitle = document.getElementById("drawerSubtitle");
+    const drawerContent = document.getElementById("drawerContent");
+    document.getElementById("btnCloseDrawer").addEventListener("click", closeDrawer);
+    drawerBg.addEventListener("click", closeDrawer);
+    window.addEventListener("keydown", (e)=>{ if(e.key==="Escape") closeDrawer(); });
+
+    function openDrawer(title, subtitle, html){
+      drawerTitle.textContent = title;
+      drawerSubtitle.textContent = subtitle || "";
+      drawerContent.innerHTML = html;
+      drawerBg.style.display = "block";
+      drawer.classList.add("open");
+    }
+    function closeDrawer(){
+      drawer.classList.remove("open");
+      drawerBg.style.display = "none";
+    }
+
+    // UI
+    const sampleCard = document.getElementById("sampleCard");
+    const notebookEl = document.getElementById("notebook");
+    const totalScoreEl = document.getElementById("totalScore");
+    const sampleIndexEl = document.getElementById("sampleIndex");
+
+    function updateScoreUI(){
+      totalScoreEl.textContent = String(state.totalScore);
+      sampleIndexEl.textContent = String(state.idx+1);
+    }
+
+    function escapeHtml(s){
+      return String(s)
+        .replaceAll("&","&amp;").replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+
+    // ---------- Risultati test ----------
+    function expResult(min, expId){
+      const p = min.props;
+      const uncertain = chance(12); // solo testo
+
+      if(expId==="color"){
+        let txt = (p.color === "CHIARO")
+          ? "chiaro (bianco/incolore/rosato; possibili variazioni)"
+          : "scuro (grigio/nero/verde scuro/bruno; possibili variazioni)";
+        if(uncertain) txt += " (osservazione incerta)";
+        return { raw: p.color, text: txt };
+      }
+
+      if(expId==="luster"){
+        const map = {
+          METALLICA:"metallica",
+          VITREA:"vitrea (tipo vetro)",
+          PERLACEA:"perlacea",
+          VITREA_PERLACEA:"vitrea con riflessi perlacei"
+        };
+        return { raw: p.luster, text: map[p.luster] || "mista" };
+      }
+
+      if(expId==="density"){
+        const map = { BASSA:"bassa (leggero)", MEDIA:"media", ALTA:"alta (pesante)", MOLTO_ALTA:"molto alta (molto pesante)" };
+        let shown = map[p.density] || "media";
+        if(uncertain) shown = `stima incerta: ${shown} (valutazione a mano)`;
+        return { raw: p.density, text: shown };
+      }
+
+      if(expId==="cleavage"){
+        const map = {
+          ASSENTE:"sfaldatura assente (frattura irregolare)",
+          SCARSA:"sfaldatura scarsa/poco evidente",
+          CUBICA:"sfaldatura (3 direzioni a 90°)",
+          ROMBOEDRICA:"sfaldatura (3 direzioni inclinate)",
+          BASALE:"sfaldatura (1 direzione: fogli/lamelle)",
+          DUE_90:"sfaldatura (2 direzioni ~90°)"
+        };
+        return { raw: p.cleavage, text: map[p.cleavage] || "non chiara" };
+      }
+
+      if(expId==="hardness"){
+        return { raw: null, text: "usa il Banco strumenti per le prove (graffio)" };
+      }
+
+      return { raw:null, text:"n/d" };
+    }
+
+    function possibleMineralsForTest(expId){
+      const all = state.items;
+
+      if(expId !== "hardness" && state.notebookRaw[expId] === undefined) return [];
+
+      if(expId === "color"){
+        const key = state.notebookRaw.color;
+        return all.filter(m => m.props.color === key).map(m => m.name);
+      }
+
+      if(expId === "luster"){
+        const key = state.notebookRaw.luster;
+        return all.filter(m => m.props.luster === key).map(m => m.name);
+      }
+
+      if(expId === "density"){
+        const key = state.notebookRaw.density;
+        return all.filter(m => m.props.density === key).map(m => m.name);
+      }
+
+      if(expId === "cleavage"){
+        const key = state.notebookRaw.cleavage;
+        return all.filter(m => m.props.cleavage === key).map(m => m.name);
+      }
+
+      if(expId === "hardness"){
+        if(state.hardnessTrials.length === 0) return [];
+        let lo = 0.0, hi = 10.0;
+        for(const tr of state.hardnessTrials){
+          if(tr.outcome === "TOOL_SCRATCHES") hi = Math.min(hi, tr.tH);
+          else if(tr.outcome === "SAMPLE_SCRATCHES") lo = Math.max(lo, tr.tH + 0.01);
+        }
+        return all.filter(m => m.props.mohs >= lo && m.props.mohs <= hi).map(m => m.name);
+      }
+
+      return [];
+    }
+
+    function exclusionFromPossible(possible){
+      const allNames = state.items.map(m => m.name);
+      const set = new Set(possible);
+      return allNames.filter(n => !set.has(n));
+    }
+
+    // ---------- Teoria proprietà (COME PRIMA: più dettagliata) + famiglie ----------
+    const FAMILY_MAP = {
+      "SILICATO": ["Quarzo","Muscovite","Biotite","Ortoclasio","Pirosseno"],
+      "CARBONATO": ["Calcite","Dolomite"],
+      "ALOGENURO": ["Halite"],
+      "SOLFURO": ["Galena","Pirite"]
+    };
+
+    const THEORY_GENERAL = `
+      <h3>Famiglie mineralogiche (nei 10 campioni)</h3>
+      <p>In mineralogia, i minerali vengono spesso raggruppati in <b>famiglie</b> in base alla composizione chimica e al tipo di legami. In questo laboratorio virtuale:</p>
+      <ul>
+        <li><b>Silicati</b>: ${FAMILY_MAP.SILICATO.join(", ")}. Sono basati su tetraedri <i>SiO₄</i> e costituiscono la maggior parte dei minerali della crosta.</li>
+        <li><b>Carbonati</b>: ${FAMILY_MAP.CARBONATO.join(", ")}. Contengono il gruppo <i>CO₃</i>; spesso hanno durezza medio-bassa e sfaldature ben riconoscibili.</li>
+        <li><b>Alogenuri</b>: ${FAMILY_MAP.ALOGENURO.join(", ")}. Sali con ioni alogeni (es. Cl⁻); spesso sono teneri e possono avere sfaldatura molto regolare.</li>
+        <li><b>Solfuri</b>: ${FAMILY_MAP.SOLFURO.join(", ")}. Contengono zolfo in combinazione con metalli; spesso mostrano lucentezza metallica e densità relativamente alta.</li>
+      </ul>
+
+      <h3>Metodo di lavoro (ragionare per esclusione)</h3>
+      <p>L’obiettivo non è “indovinare” subito, ma <b>ridurre</b> gradualmente i possibili minerali combinando le prove:</p>
+      <ul>
+        <li><b>Colore</b> e <b>lucentezza</b> servono a fare una prima selezione (sono proprietà rapide ma non sempre decisive).</li>
+        <li><b>Sfaldatura</b> e <b>durezza</b> sono spesso più diagnostiche: aiutano a confermare o smentire un’ipotesi.</li>
+        <li><b>Densità</b> (stima “leggero/medio/pesante”) è utile quando due campioni sembrano simili per colore e lucentezza.</li>
+      </ul>
+
+      <h4>Colore</h4>
+      <p>È l’aspetto cromatico osservabile a occhio. In natura può variare per:</p>
+      <ul>
+        <li><b>impurità</b> (piccole quantità di elementi possono cambiare il colore),</li>
+        <li><b>alterazione</b> superficiale (patine, ossidazioni),</li>
+        <li><b>granulometria</b> e presenza di inclusioni.</li>
+      </ul>
+      <p>Per questo il colore va usato come <b>indizio iniziale</b>, non come prova finale.</p>
+
+      <h4>Lucentezza</h4>
+      <p>Descrive <b>come</b> la superficie riflette la luce:</p>
+      <ul>
+        <li><b>Metallica</b>: riflessi intensi e opachi, simili a un metallo.</li>
+        <li><b>Vitrea</b>: riflessi come vetro; tipica di molti silicati.</li>
+        <li><b>Perlacea</b>: riflessi “madreperla”, spesso associata a piani di sfaldatura ben sviluppati.</li>
+      </ul>
+      <p>La lucentezza è spesso più affidabile del colore per separare grandi gruppi.</p>
+
+      <h4>Densità (stima qualitativa)</h4>
+      <p>È un confronto “a mano”: a parità di dimensioni apparenti, un campione può sembrare:</p>
+      <ul>
+        <li><b>leggero</b> (densità bassa),</li>
+        <li><b>normale</b> (densità media),</li>
+        <li><b>pesante</b> (densità alta),</li>
+        <li><b>molto pesante</b> (densità molto alta).</li>
+      </ul>
+      <p>È utile soprattutto per riconoscere minerali ricchi di metalli o per distinguere campioni con sfaldatura simile.</p>
+
+      <h4>Sfaldatura</h4>
+      <p>È la tendenza a rompersi lungo <b>piani</b> preferenziali, legati alla struttura cristallina. Osserva:</p>
+      <ul>
+        <li><b>quante direzioni</b> di sfaldatura sono presenti (1, 2 o 3),</li>
+        <li><b>gli angoli</b> tra i piani (circa 90° oppure inclinati),</li>
+        <li><b>quanto è evidente</b> (perfetta vs scarsa).</li>
+      </ul>
+      <p>Se non esistono piani regolari e la rottura è irregolare, si parla di <b>frattura</b>.</p>
+
+      <h4>Durezza (test di graffio)</h4>
+      <p>La durezza è la resistenza al graffio. Regola fondamentale:</p>
+      <ul>
+        <li>se A graffia B, allora <b>A è più duro di B</b>.</li>
+      </ul>
+      <p>In questo laboratorio virtuale si usano strumenti con durezza indicativa:</p>
+      <ul>
+        <li><b>Unghia</b> ~2,5</li>
+        <li><b>Moneta</b> ~3,5</li>
+        <li><b>Acciaio/Vetro</b> ~5,5</li>
+      </ul>
+      <p>Non fermarti a una sola prova: l’obiettivo è costruire un <b>intervallo</b>, ad esempio “&gt;3,5 e ≤5,5”.</p>
+    `;
+
+    const THEORY_TEXT = {
+      color: `
+        <h4>Colore</h4>
+        <p>Il colore è intenzionalmente “ampio”. Usalo per orientarti e poi conferma con test più robusti.</p>
+      `,
+      luster: `
+        <h4>Lucentezza</h4>
+        <ul>
+          <li><b>Metallica</b>: riflessi forti “da metallo”.</li>
+          <li><b>Vitrea</b>: riflessi come vetro.</li>
+          <li><b>Perlacea</b>: riflessi “madreperla”, spesso sui piani di sfaldatura.</li>
+        </ul>
+      `,
+      density: `
+        <h4>Densità</h4>
+        <p>È una stima: “leggero/medio/pesante”. Se il risultato sembra incerto, non usarlo da solo.</p>
+      `,
+      cleavage: `
+        <h4>Sfaldatura</h4>
+        <p>Osserva piani lisci ripetuti (sfaldatura) oppure rottura irregolare (frattura).</p>
+      `,
+      hardness: `
+        <h4>Durezza</h4>
+        <p>Costruisci un intervallo usando più strumenti (non una sola prova).</p>
+      `
+    };
+
+    function isTestUnlocked(expId){
+      if(expId === "hardness") return state.hardnessActive || state.notebook.hardness !== undefined;
+      return state.notebook[expId] !== undefined;
+    }
+
+    function render(){
+      const s = currentItem();
+      updateScoreUI();
+
+      sampleCard.innerHTML = `
+        <div class="topline">
+          <div class="badge"><strong>CAMPIONE ${state.idx+1}/${state.items.length}</strong></div>
+          <div style="flex:1"></div>
+          <div class="badge">Tentativi: <strong>${state.attempts}</strong></div>
+        </div>
+
+        <div class="grid2">
+          <div class="mini">
+            <h3>Foto</h3>
+            <div class="rockImgWrap">
+              <img class="rockImg"
+                   src="${escapeHtml(s.imageUrl)}"
+                   alt="Foto campione"
+                   onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+              <pre class="ascii" style="display:none;">${escapeHtml(s.ascii || "")}</pre>
+
+              <div class="imgLinks">
+                <a class="linkBtn" href="${escapeHtml(s.imageUrl)}" target="_blank" rel="noopener">Apri immagine</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="mini">
+            <h3>Indizi visivi</h3>
+            <ul class="bullets">
+              ${s.visualHints.map(x => `<li>${escapeHtml(x)}</li>`).join("")}
+            </ul>
+          </div>
+        </div>
+
+        <div class="topline" style="margin-top:14px;">
+          <div class="badge"><strong>TEST DI LABORATORIO</strong></div>
+          <button class="small" data-general-theory="1">Teoria proprietà</button>
+        </div>
+
+        <div class="tests">
+          ${EXPERIMENTS.map(ex => {
+            const done = (state.notebook[ex.id] !== undefined) || (ex.id==="hardness" && state.hardnessActive);
+            const unlocked = isTestUnlocked(ex.id);
+
+            let actionHtml = "";
+            if(ex.id === "hardness"){
+              if(!state.hardnessActive) actionHtml = `<button class="small" data-exp="hardness">Attiva</button>`;
+              else actionHtml = `<span class="pill done">✓ attivo</span>`;
+            } else {
+              if(!done) actionHtml = `<button class="small" data-exp="${ex.id}">Esegui</button>`;
+              else actionHtml = `<span class="pill done">✓ fatto</span>`;
+            }
+
+            const resultsLabel = unlocked ? "Risultati" : "Risultati (bloccati)";
+            const resultsDisabled = unlocked ? "" : "disabled";
+
+            return `
+              <div class="testRow">
+                <div>
+                  <div class="tname">${escapeHtml(ex.label)}</div>
+                  <div class="tdesc"><b>Cosa misura:</b> ${escapeHtml(ex.what)}</div>
+                </div>
+                <div>${actionHtml}</div>
+                <button class="small" ${resultsDisabled} data-results="${ex.id}" title="${unlocked ? "" : "Esegui prima il test per sbloccare i risultati"}">${resultsLabel}</button>
+              </div>
+            `;
+          }).join("")}
+        </div>
+
+        <div class="bench">
+          <div class="topline" style="margin:0;">
+            <div class="badge"><strong>BANCO STRUMENTI — DUREZZA</strong></div>
+            <div style="flex:1"></div>
+            <div class="badge">${state.hardnessActive ? "Durezza: <strong>attiva</strong>" : "Durezza: <strong>non attiva</strong>"}</div>
+          </div>
+
+          <div class="benchGrid">
+            ${TOOLS.map(t => `
+              <div class="toolBtn" data-tool="${t.id}">
+                <div class="toolEmoji">${t.emoji}</div>
+                <div class="toolLabel">${escapeHtml(t.name)}</div>
+                <div class="toolSub">${escapeHtml(t.note)}</div>
+              </div>
+            `).join("")}
+          </div>
+
+          <div class="benchHint">
+            • Attiva la durezza una volta, poi fai più prove dal banco strumenti.<br/>
+            • L’obiettivo è costruire un intervallo (es. &gt;3,5 e ≤5,5).
+          </div>
+        </div>
+      `;
+
+      sampleCard.querySelectorAll("button[data-exp]").forEach(btn => {
+        btn.addEventListener("click", () => doExperiment(btn.dataset.exp));
+      });
+      sampleCard.querySelectorAll("button[data-results]").forEach(btn => {
+        btn.addEventListener("click", () => openResults(btn.dataset.results));
+      });
+
+      const genBtn = sampleCard.querySelector("button[data-general-theory]");
+      if(genBtn){
+        genBtn.addEventListener("click", () => openDrawer("Teoria proprietà fisiche", "", THEORY_GENERAL));
+      }
+
+      sampleCard.querySelectorAll(".toolBtn[data-tool]").forEach(div => {
+        div.addEventListener("click", () => useTool(div.dataset.tool));
+      });
+
+      // taccuino
+      if(state.hardnessTrials.length > 0){
+        const lines = state.hardnessTrials.map(tr => `- ${tr.text}`).join("\n");
+        state.notebook["hardness"] = `Prove di graffio:\n${lines}`;
+      } else if(state.hardnessActive && state.notebook["hardness"] === undefined){
+        state.notebook["hardness"] = "Durezza attiva: usa il Banco strumenti per le prove.";
+      }
+
+      const entries = Object.entries(state.notebook);
+      if(entries.length === 0){
+        notebookEl.textContent = "(nessun test eseguito)";
+      } else {
+        notebookEl.innerHTML = entries.map(([id, text]) => {
+          const ex = EXPERIMENTS.find(e=>e.id===id);
+          const label = ex ? ex.label : id;
+          return `<div class="line"><span class="tag info">${escapeHtml(label)}</span> ${escapeHtml(text)}</div>`;
+        }).join("");
+      }
+    }
+
+    function openResults(expId){
+      if(!isTestUnlocked(expId)) return;
+
+      const ex = EXPERIMENTS.find(e=>e.id===expId);
+      const resultShown = state.notebook[expId] ? state.notebook[expId] : (expId==="hardness" ? "—" : "—");
+
+      const possible = possibleMineralsForTest(expId);
+      const excluded = possible.length ? exclusionFromPossible(possible) : [];
+
+      const possibleHtml = possible.length
+        ? `<div class="chipRow">${possible.map(n=>`<span class="chip">${escapeHtml(n)}</span>`).join("")}</div>`
+        : `<p>(Esegui una prova utile per ottenere un insieme di compatibili.)</p>`;
+
+      const excludedHtml = excluded.length
+        ? `<div class="chipRow">${excluded.map(n=>`<span class="chip">${escapeHtml(n)}</span>`).join("")}</div>`
+        : `<p>(Nessuna esclusione certa solo con questo test.)</p>`;
+
+      const html = `
+        ${THEORY_TEXT[expId] || ""}
+
+        <h4>Il tuo risultato</h4>
+        <p><b>${escapeHtml(ex ? ex.label : expId)}:</b> ${escapeHtml(resultShown)}</p>
+
+        <h4>Compatibili tra i 10 minerali (solo da questo test)</h4>
+        ${possibleHtml}
+
+        <h4>Escludibili con questo test (solo da questo test)</h4>
+        ${excludedHtml}
+
+        <h4>Come usarlo</h4>
+        <p>Ripeti con una proprietà diversa: l’idea è ridurre progressivamente i compatibili combinando più prove.</p>
+      `;
+
+      openDrawer("Risultati", ex ? ex.label : "", html);
+    }
+
+    function doExperiment(expId){
+      if(expId === "hardness"){
+        if(!state.hardnessActive){
+          state.hardnessActive = true;
+          state.notebook["hardness"] = "Durezza attiva: usa il Banco strumenti per le prove.";
+        }
+        render();
+        return;
+      }
+
+      if(state.notebook[expId] !== undefined){
+        render();
+        return;
+      }
+
+      state.testsUsed += 1;
+      const res = expResult(currentItem(), expId);
+      state.notebook[expId] = res.text;
+      state.notebookRaw[expId] = res.raw;
+      render();
+    }
+
+    function toolById(id){ return TOOLS.find(t=>t.id===id); }
+
+    function useTool(toolId){
+      const tool = toolById(toolId);
+      if(!tool) return;
+
+      if(!state.hardnessActive){
+        state.hardnessActive = true;
+        state.notebook["hardness"] = "Durezza attiva: usa il Banco strumenti per le prove.";
+      }
+
+      const s = currentItem();
+      const mH = s.props.mohs;
+      const tH = tool.mohs;
+
+      if(state.hardnessTrials.some(tr => tr.toolId === toolId)) {
+        render();
+        return;
+      }
+
+      let outcomeText = "";
+      let outcomeKind = "TOOL_SCRATCHES";
+      if(tH >= mH){
+        outcomeText = `${tool.name} (${tool.note}) graffia il campione`;
+        outcomeKind = "TOOL_SCRATCHES";
+      } else {
+        if(toolId === "glass") outcomeText = `Il campione graffia il vetro (${tool.note})`;
+        else if(toolId === "steel") outcomeText = `Il campione resiste all’acciaio (${tool.note})`;
+        else if(toolId === "coin") outcomeText = `Il campione resiste alla moneta (${tool.note})`;
+        else outcomeText = `Il campione resiste all’unghia (${tool.note})`;
+        outcomeKind = "SAMPLE_SCRATCHES";
+      }
+
+      if(chance(10)) outcomeText += " (prova poco netta)";
+
+      state.hardnessTrials.push({ toolId, text: outcomeText, tH, outcome: outcomeKind });
+      render();
+    }
+
+    // punteggio
+    function maxNamePoints(attempts){ return Math.max(8 - 2*attempts, 2); }
+    function maxFamilyPoints(attempts){ return Math.max(3 - 1*attempts, 1); }
+    function efficiencyBonus(){
+      if(state.testsUsed <= 2) return 2;
+      if(state.testsUsed <= 3) return 1;
+      return 0;
+    }
+
+    function nextItem(){
+      state.idx += 1;
+      if(state.idx >= state.items.length){
+        showFinalScreen();
+        return;
+      }
+      initItem();
+      render();
+      updateScoreUI();
+    }
+
+    function showFinalScreen(){
+      // chiude eventuali overlay
+      closeDrawer();
+      closeModal();
+
+      // mostra pagina finale
+      finalScoreEl.textContent = String(state.totalScore);
+      gameScreen.style.display = "none";
+      startScreen.style.display = "none";
+      endScreen.style.display = "flex";
+    }
+
+    // ---------- Modal ipotesi con feedback corretto/sbagliato ----------
+    const modalBg = document.getElementById("modalBg");
+    const btnGuess = document.getElementById("btnGuess");
+    const btnSkip  = document.getElementById("btnSkip");
+    const btnRestart = document.getElementById("btnRestart");
+
+    const btnCancel = document.getElementById("btnCancel");
+    const btnSubmitGuess = document.getElementById("btnSubmitGuess");
+    const btnNext = document.getElementById("btnNext");
+    const guessFamilyEl = document.getElementById("guessFamily");
+    const guessNameEl = document.getElementById("guessName");
+    const attemptNote = document.getElementById("attemptNote");
+
+    const statusBox = document.getElementById("statusBox");
+    const statusTitle = document.getElementById("statusTitle");
+    const statusText = document.getElementById("statusText");
+
+    function resetGuessModalUI(){
+      statusBox.style.display = "none";
+      statusBox.classList.remove("ok","bad");
+      statusTitle.classList.remove("ok","bad");
+      btnNext.style.display = "none";
+      btnSubmitGuess.style.display = "";
+      btnCancel.disabled = false;
+      guessFamilyEl.disabled = false;
+      guessNameEl.disabled = false;
+      state.pendingAdvance = false;
+    }
+
+    function openModal(){
+      resetGuessModalUI();
+      guessFamilyEl.value = "";
+      guessNameEl.value = "";
+      const np = maxNamePoints(state.attempts);
+      const fp = maxFamilyPoints(state.attempts);
+      attemptNote.innerHTML =
+        `<b>Punteggio massimo attuale:</b> Nome +${np}. ` +
+        `Famiglia +${fp} (se corretta e scelta). ` +
+        `<br/><span style="color:var(--muted);">Tentativi già fatti: ${state.attempts}</span>`;
+      modalBg.style.display = "flex";
+      guessNameEl.focus();
+    }
+    function closeModal(){ modalBg.style.display = "none"; }
+
+    function showStatus(kind, title, html){
+      statusBox.style.display = "block";
+      statusBox.classList.remove("ok","bad");
+      statusTitle.classList.remove("ok","bad");
+      statusBox.classList.add(kind);
+      statusTitle.classList.add(kind);
+      statusTitle.textContent = title;
+      statusText.innerHTML = html;
+    }
+
+    btnGuess.addEventListener("click", openModal);
+    btnCancel.addEventListener("click", () => { if(!state.pendingAdvance) closeModal(); });
+    modalBg.addEventListener("click", (e)=>{ if(e.target===modalBg && !state.pendingAdvance) closeModal(); });
+
+    btnSubmitGuess.addEventListener("click", ()=>{
+      const item = currentItem();
+      const gFam = (guessFamilyEl.value || "").trim();
+      const gName = (guessNameEl.value || "").trim();
+      if(gName.length === 0) return;
+
+      const nameOk = (gName.toLowerCase() === item.name.toLowerCase());
+      const famTried = gFam.length > 0;
+      const famOk = famTried && (gFam === item.family);
+
+      const np = maxNamePoints(state.attempts);
+      const fp = maxFamilyPoints(state.attempts);
+
+      if(nameOk){
+        let gained = np + efficiencyBonus();
+        if(famTried && famOk) gained += fp;
+        if(famTried && !famOk) gained -= 1;
+
+        state.totalScore += gained;
+        state.lastGain = gained;
+        updateScoreUI();
+
+        state.pendingAdvance = true;
+        guessFamilyEl.disabled = true;
+        guessNameEl.disabled = true;
+        btnSubmitGuess.style.display = "none";
+        btnNext.style.display = "";
+        btnCancel.disabled = true;
+
+        showStatus("ok", "✅ Corretto!", `
+          Hai identificato correttamente il campione.<br/>
+          <b>Punti ottenuti:</b> +${gained}<br/>
+          <span style="color:var(--muted)">Premi “Avanti” per passare al campione successivo.</span>
+        `);
+        return;
+      }
+
+      state.attempts += 1;
+      state.totalScore -= 1;
+      updateScoreUI();
+
+      const np2 = maxNamePoints(state.attempts);
+      const fp2 = maxFamilyPoints(state.attempts);
+
+      showStatus("bad", "❌ Sbagliato", `
+        Puoi riprovare. Il punteggio massimo del campione diminuisce con i tentativi.<br/>
+        <b>Nuovo massimo:</b> Nome +${np2}, Famiglia +${fp2}.
+      `);
+
+      attemptNote.innerHTML =
+        `<b>Punteggio massimo attuale:</b> Nome +${np2}. ` +
+        `Famiglia +${fp2} (se corretta e scelta). ` +
+        `<br/><span style="color:var(--muted);">Tentativi già fatti: ${state.attempts}</span>`;
+
+      guessNameEl.select();
+      render();
+    });
+
+    btnNext.addEventListener("click", ()=>{
+      closeModal();
+      nextItem();
+    });
+
+    btnSkip.addEventListener("click", ()=>{
+      state.totalScore -= 2;
+      updateScoreUI();
+      closeModal();
+      nextItem();
+    });
+
+    btnRestart.addEventListener("click", () => resetGame() );
+  </script>
+</body>
+</html>
