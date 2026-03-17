@@ -596,52 +596,52 @@
     // ===========================================================
 
     const BASE_MINERALS = [
-      { name:"Quarzo", family:"SILICATO", imageUrl:"quarzo.jpg",
+      { name:"Quarzo", family:"SILICATO", imageUrl:"1.jpg",
         ascii:`  *   .   *   .\n .  *  .  *  .\n  *   .   *   `,
         visualHints:["Aspetto spesso chiaro/trasparente","Lucentezza vitrea (tipo vetro)","Rotture irregolari/curve (sfaldatura assente)"],
         props:{ color:"CHIARO", luster:"VITREA", density:"MEDIA", cleavage:"ASSENTE", mohs:7.0 }
       },
-      { name:"Calcite", family:"CARBONATO", imageUrl:"calcite.jpg",
+      { name:"Calcite", family:"CARBONATO", imageUrl:"2.jpg",
         ascii:`  <>  <>  <>\n <>  <>  <> \n  <>  <>  <>`,
         visualHints:["Spesso bianca/incolore","Sfaldatura romboedrica (facce inclinate)","Durezza bassa: si graffia con moneta"],
         props:{ color:"CHIARO", luster:"VITREA_PERLACEA", density:"MEDIA", cleavage:"ROMBOEDRICA", mohs:3.0 }
       },
-      { name:"Dolomite", family:"CARBONATO", imageUrl:"dolomite.jpg",
+      { name:"Dolomite", family:"CARBONATO", imageUrl:"3.jpg",
         ascii:` <> <> <> <>\n<> <> <> <>\n <> <> <> <>`,
         visualHints:["Spesso chiara (bianco/rosa/grigio)","Sfaldatura romboedrica (simile alla calcite)","Più resistente della calcite al graffio con moneta"],
         props:{ color:"CHIARO", luster:"VITREA_PERLACEA", density:"ALTA", cleavage:"ROMBOEDRICA", mohs:3.5 }
       },
-      { name:"Halite", family:"ALOGENURO", imageUrl:"halite.jpg",
+      { name:"Halite", family:"ALOGENURO", imageUrl:"4.jpg",
         ascii:` [ ] [ ] [ ]\n [ ] [ ] [ ]\n [ ] [ ] [ ]`,
         visualHints:["Spesso chiara/trasparente","Sfaldatura cubica (angoli a 90°)","Molto tenera: si incide facilmente"],
         props:{ color:"CHIARO", luster:"VITREA", density:"BASSA", cleavage:"CUBICA", mohs:2.5 }
       },
-      { name:"Galena", family:"SOLFURO", imageUrl:"galena.jpg",
+      { name:"Galena", family:"SOLFURO", imageUrl:"5.jpg",
         ascii:` ####  ####\n###### #####\n ####  #### `,
         visualHints:["Colore scuro (grigio/nero)","Lucentezza metallica","Molto pesante (densità molto alta)"],
         props:{ color:"SCURO", luster:"METALLICA", density:"MOLTO_ALTA", cleavage:"CUBICA", mohs:2.5 }
       },
-      { name:"Muscovite", family:"SILICATO", imageUrl:"muscovite.jpg",
+      { name:"Muscovite", family:"SILICATO", imageUrl:"6.jpg",
         ascii:`|||||||||||||\n|||||||||||||\n|||||||||||||`,
         visualHints:["Si separa in fogli sottili (sfaldatura basale)","Lucentezza perlacea sui piani","Colore spesso chiaro/argenteo"],
         props:{ color:"CHIARO", luster:"PERLACEA", density:"MEDIA", cleavage:"BASALE", mohs:2.5 }
       },
-      { name:"Biotite", family:"SILICATO", imageUrl:"biotite.jpg",
+      { name:"Biotite", family:"SILICATO", imageUrl:"7.jpg",
         ascii:`|||||||||||||\n|||||||||||||\n|||||||||||||`,
         visualHints:["Si separa in fogli (sfaldatura basale)","Colore scuro (bruno/nero)","Lucentezza perlacea"],
         props:{ color:"SCURO", luster:"PERLACEA", density:"MEDIA", cleavage:"BASALE", mohs:2.5 }
       },
-      { name:"Pirite", family:"SOLFURO", imageUrl:"pirite.jpg",
+      { name:"Pirite", family:"SOLFURO", imageUrl:"8.jpg",
         ascii:` ****  ****\n***********\n ****  ****`,
         visualHints:["Colore giallo-bruno/metallico","Lucentezza metallica","Dura: può graffiare il vetro"],
         props:{ color:"SCURO", luster:"METALLICA", density:"ALTA", cleavage:"SCARSA", mohs:6.5 }
       },
-      { name:"Ortoclasio", family:"SILICATO", imageUrl:"ortoclasio.jpg",
+      { name:"Ortoclasio", family:"SILICATO", imageUrl:"9.jpg",
         ascii:`== == == ==\n == == == =\n== == == ==`,
         visualHints:["Colore chiaro/rosato o bianco","Due direzioni di sfaldatura circa a 90°","Durezza medio-alta"],
         props:{ color:"CHIARO", luster:"VITREA", density:"MEDIA", cleavage:"DUE_90", mohs:6.0 }
       },
-      { name:"Pirosseno", family:"SILICATO", imageUrl:"pirosseno.jpg",
+      { name:"Pirosseno", family:"SILICATO", imageUrl:"10.jpg",
         ascii:`==//==//==//\n//==//==//==\n==//==//==//`,
         visualHints:["Colore spesso scuro (verde scuro/nero)","Due direzioni di sfaldatura circa a 90°","Densità spesso più alta di un feldspato"],
         props:{ color:"SCURO", luster:"VITREA", density:"ALTA", cleavage:"DUE_90", mohs:5.5 }
