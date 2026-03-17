@@ -1313,7 +1313,7 @@
       const fp = maxFamilyPoints(state.attempts);
 
       if(nameOk){
-        let gained = np + efficiencyBonus();
+        let gained = np;
         if(famTried && famOk) gained += fp;
         if(famTried && !famOk) gained -= 1;
 
